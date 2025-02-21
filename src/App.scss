@@ -10,6 +10,8 @@ body {
 .app-container{
   .header-container{
     .navbar-nav{
+      z-index: 10;
+      opacity: 0.6;
       .nav-link{
             &.active{
               color: #00bfff;
@@ -17,4 +19,14 @@ body {
       }
     } 
   }
+}
+
+
+video {
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  // height: 100%;
+  // object-fit: cover; /* Đảm bảo video sẽ không bị méo và lấp đầy toàn bộ màn hình */
+  // // z-index: -1; /* Để video nằm phía sau các nội dung khác */
 }
