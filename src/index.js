@@ -1,8 +1,9 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import 'bootstrap/dist/css/bootstrap.min.css';
+
 import { BrowserRouter , 
   Routes,
   Route,
@@ -10,6 +11,8 @@ import { BrowserRouter ,
 import User from './components/User/User';
 import Admin from './components/Admin/Admin';
 import HomePage from './components/Home/HomePage';
+import ManagerUser from './components/Admin/Content/ManagerUser';
+import DashBoard from './components/Admin/Content/DashBoard';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode>
@@ -20,7 +23,10 @@ root.render(
     <Route index element={<HomePage />} />
     <Route path="users" element={<User />} />
     </Route>
-    <Route path="admins" element={<Admin />} />
+    <Route path="/admins" element={<Admin />} >
+    <Route index element={<DashBoard />} />
+    <Route path="manager-users" element={<ManagerUser />} />
+    </Route>
   </Routes>
   </BrowserRouter>
   // </React.StrictMode>

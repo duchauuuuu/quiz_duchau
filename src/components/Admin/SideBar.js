@@ -16,6 +16,7 @@ import { HiAcademicCap } from "react-icons/hi2";
 import { MdDashboard } from "react-icons/md";
 import { FaGem } from "react-icons/fa";
 import { FaRegMoneyBill1 } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 const SideBar = (props) => {
     const { image, collapsed, toggled, handleToggleSidebar } = props;
     return (
@@ -52,6 +53,7 @@ const SideBar = (props) => {
                         
                         >
                             dashboard
+                            <Link to="/admins"/>
                         </MenuItem>
                         
                     </Menu>
@@ -62,6 +64,7 @@ const SideBar = (props) => {
                             title="Features"
                         >
                             <MenuItem>Quản lý Users</MenuItem>
+                            <Link to="/admins/manager-users"/>
                             <MenuItem>Quản lý bài Quiz</MenuItem>
                             <MenuItem>Quản lý câu hỏi</MenuItem>
                         </SubMenu>
