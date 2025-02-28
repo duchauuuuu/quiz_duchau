@@ -1,20 +1,25 @@
 import ModalCreateUser from "./ModalCreateUser";
 import "./ManagerUser.scss"
+import { GoPlusCircle } from "react-icons/go";
+import { useState } from "react";
 const ManagerUser = (props) => {
+
+    const [showModalCreateUser, setShowModalCreateUser] = useState(false);
+
     return(
         <div className="manager-user-container">
         <div className="title">
             Manager User
         </div>
         <div className="users-content">
-            <div>
-                <button>Add new users</button>
+            <div className="btn-add-new">
+                <button className="btn btn-primary" onClick={()=>setShowModalCreateUser(true)}><GoPlusCircle/>Add new users</button>
             </div>
-            <div>
+            <div className="table-users-container">
                 table user
                
             </div>
-            <ModalCreateUser/>
+            <ModalCreateUser show={showModalCreateUser} setShow={setShowModalCreateUser}/>
         </div>
         </div>
     )

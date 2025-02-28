@@ -2,25 +2,55 @@ import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { GoPlusCircle } from "react-icons/go";
-const ModalCreateUser = () => {
-  const [show, setShow] = useState(false);
+import axios from "axios";
+const ModalCreateUser = (props) => {
+  const { show, setShow } = props;
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false);
+    setEmail("");
+    setPassword("");
+    setUsername("");
+    setRole("USER");
+    setImage("");
+    setPreviewImage("");
+  };
   const handleShow = () => setShow(true);
 
-  const [email, setEmail] = new useState("");
-  const [password, setPassword] = new useState("");
-  const [username, setUsername] = new useState("");
-  const [role, setRole] = new useState("USER");
-  const [image, setImage] = new useState("");
-  const [previewImage, setPreviewImage] = new useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [role, setRole] = useState("USER");
+  const [image, setImage] = useState("");
+  const [previewImage, setPreviewImage] = useState("");
   const handleUploadImage = (event) => {
     if (event.target && event.target.files && event.target.files[0]) {
       setPreviewImage(URL.createObjectURL(event.target.files[0]));
       setImage(event.target.files[0]);
     } else {
-    //   setPreviewImage("");
+      //   setPreviewImage("");
     }
+  };
+  const handleSubmitCreateUser = async () => {
+    // let data = {
+    //   email: email,
+    //   password: password,
+    //   username: username,
+    //   role: role,
+    //   userImage: image,
+    // };
+    // console.log(data);
+    const data = new FormData();
+    data.append("email", email);
+    data.append("password", password);
+    data.append("username", username);
+    data.append("role", role);
+    data.append("userImage", image);
+    let res = await axios.post(
+      "http://localhost:8081/api/v1/participant",
+      data
+    );
+    console.log(res);
   };
   return (
     <>
@@ -78,9 +108,7 @@ const ModalCreateUser = () => {
                 <option selected value="USER">
                   USER
                 </option>
-                <option selected value="ADMIN">
-                  ADMIN
-                </option>
+                <option value="ADMIN">ADMIN</option>
               </select>
             </div>
             <div className="col-md-12">
@@ -107,7 +135,7 @@ const ModalCreateUser = () => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button variant="primary" onClick={() => handleSubmitCreateUser()}>
             Save
           </Button>
         </Modal.Footer>
