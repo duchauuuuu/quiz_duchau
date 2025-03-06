@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { GoPlusCircle } from "react-icons/go";
 import {toast } from "react-toastify";
-import { postCreateNewUser } from "../../../services/apiService";
-const ModalCreateUser = (props) => {
-  const { show, setShow } = props;
+import { putUpdateUser } from "../../../services/apiService";
+import _ from "lodash"
+const ModalUpdateUser = (props) => {
+  const { show, setShow, dataUpdate } = props;
 
   const handleClose = () => {
     setShow(false);
@@ -15,6 +16,7 @@ const ModalCreateUser = (props) => {
     setRole("USER");
     setImage("");
     setPreviewImage("");
+    props.resetUpdateData();
   };
   const handleShow = () => setShow(true);
 
@@ -24,6 +26,17 @@ const ModalCreateUser = (props) => {
   const [role, setRole] = useState("USER");
   const [image, setImage] = useState("");
   const [previewImage, setPreviewImage] = useState("");
+  useEffect(()=>{
+    if(!_.isEmpty(dataUpdate)){
+        setEmail(dataUpdate.email);
+        setUsername(dataUpdate.username);
+        setRole(dataUpdate.role);
+        setImage("");
+        if(dataUpdate.image){
+            setPreviewImage(`data:image/jpeg;base64,${dataUpdate.image}`);
+        }
+    }
+  },[dataUpdate])
   const handleUploadImage = (event) => {
     if (event.target && event.target.files && event.target.files[0]) {
       setPreviewImage(URL.createObjectURL(event.target.files[0]));
@@ -46,18 +59,16 @@ const ModalCreateUser = (props) => {
       toast.error("Invalid email");
       return;
     }
-    if(!password){
-      toast.error("Invalid password");
-      return;
-    }
     
-    let data = await postCreateNewUser(email, password, username, role, image);
+    let data = await putUpdateUser(dataUpdate.id,username, role, image);
     
     if(data && data.EC === 0 ){
       toast.success(data.EM);
       handleClose();
-      props.setCurrentPage(1);
-      await props.fetchListUsersWithPaginate(1);    
+      // await props.fetchListUsers(); 
+      // props.setCurrentPage(1);
+      await props.fetchListUsersWithPaginate(props.currentPage);    
+      
     }
     if(data && data.EC !== 0 ){
       toast.error(data.EM);
@@ -66,8 +77,7 @@ const ModalCreateUser = (props) => {
   };
   return (
     <>
-   
-
+    
       <Modal
         show={show}
         onHide={handleClose}
@@ -77,7 +87,7 @@ const ModalCreateUser = (props) => {
         className="modal-add-user"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Add new user</Modal.Title>
+          <Modal.Title>Update a user</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form className="row g-3">
@@ -87,6 +97,7 @@ const ModalCreateUser = (props) => {
                 type="email"
                 className="form-control"
                 value={email}
+                disabled
                 onChange={(event) => setEmail(event.target.value)}
               />
             </div>
@@ -96,6 +107,7 @@ const ModalCreateUser = (props) => {
                 type="password"
                 className="form-control"
                 value={password}
+                disabled
                 onChange={(event) => setPassword(event.target.value)}
               />
             </div>
@@ -154,4 +166,4 @@ const ModalCreateUser = (props) => {
   );
 };
 
-export default ModalCreateUser;
+export default ModalUpdateUser;
