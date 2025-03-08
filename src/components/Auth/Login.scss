@@ -2,7 +2,20 @@
     .header{
         height: 45px;
         text-align:right;
-      
+        padding: 0 100px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        button{
+            padding: 3px 15px;
+            margin-left: 15px;
+            border-radius: 5px;
+            background: #f9f9f9;
+            border: 1px solid;
+            &:hover{
+                background-color: white;
+            }
+        }
     }
     .title{
         text-align: center;
@@ -29,5 +42,9 @@
             color: white;
             background: black;
         }
+        .back{
+            cursor: pointer;
+        }
+        
     }
 }
