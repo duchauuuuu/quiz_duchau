@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { getDataQuiz } from "../../services/apiService";
+import { getDataQuiz, postSubmitQuiz } from "../../services/apiService";
 import _ from "lodash";
 import "./DetailQuiz.scss";
 import Question from "./Question";
+import ModalResult from "./ModalResult";
 import { set } from "nprogress";
 const DetailQuiz = (props) => {
   const params = useParams();
@@ -11,6 +12,8 @@ const DetailQuiz = (props) => {
   const location = useLocation();
   const [dataQuiz, setDataQuiz] = useState([]);
   const [index, setIndex] = useState(0);
+  const[isShowModalResult,setIsShowModalResult]=useState(false);
+  const[dataModalResult,setDataModalResult]=useState({});
   useEffect(() => {
     fetchQuestion();
   }, [quizId]);
@@ -77,6 +80,42 @@ const DetailQuiz = (props) => {
       setDataQuiz(dataQuizClone);
     }
 }
+  const handleFinishQuiz = async() => {
+    let payload = {
+      quizId:+quizId,
+      answers: []
+    };
+    let answers = [];
+    if (dataQuiz && dataQuiz.length > 0){
+        dataQuiz.forEach(question => {
+          let questionId = +question.questionId;
+          let userAnswerId = [];
+          question.answers.forEach(a => {
+              if(a.isSelected){
+                userAnswerId.push(+a.id)
+              }
+          })
+          answers.push({
+            questionId,
+            userAnswerId
+          })
+        })
+        payload.answers =answers;
+        let res = await postSubmitQuiz(payload);
+        if(res && res.EC===0){
+          setDataModalResult({
+            countCorrect:res.DT.countCorrect,
+            countTotal:res.DT.countTotal,
+            quizData: res.DT.quizData
+          })
+            setIsShowModalResult(true);
+        }
+        else {
+          alert('something went wrong');
+        }
+    }
+
+  }
   return (
     <div className="detail-quiz-container">
       <div className="left-content">
@@ -97,10 +136,11 @@ const DetailQuiz = (props) => {
         <div className="q-footer">
           <button className="btn btn-secondary ml-3" onClick={()=>handlePrev()}>Prev</button>
           <button className="btn btn-primary" onClick={()=>handleNext()}>Next</button>
-          <button className="btn btn-warning" onClick={()=>handleNext()}>Finish</button>
+          <button className="btn btn-warning" onClick={()=>handleFinishQuiz()}>Finish</button>
         </div>
       </div>
       <div className="right-content"></div>
+      <ModalResult show={isShowModalResult} setShow={setIsShowModalResult} dataModalResult={dataModalResult}/>
     </div>
   );
 };
