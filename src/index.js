@@ -12,11 +12,13 @@ import Layout from './Layout';
 import {store,persistor} from './redux/reducer/store';
 import 'nprogress/nprogress.css';
 import { PersistGate } from 'redux-persist/integration/react' 
+import 'react-perfect-scrollbar/dist/css/styles.css';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode>
   <Provider store={store}>
-     <PersistGate loading={null} persistor={persistor}> <BrowserRouter>
+     <PersistGate loading={null} persistor={persistor}>
+    <BrowserRouter>
     <Layout/>
   </BrowserRouter>
   </PersistGate>

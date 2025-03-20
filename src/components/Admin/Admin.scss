@@ -12,7 +12,12 @@
             border: 1px solid green;
         }
         .admin-main{
-          
+          height: calc(100vh - 40px);
+        //   .user-pagination{
+        //     display: flex;
+        //     justify-content: flex-end;
+            
+        //   }
         }
     }
 }
