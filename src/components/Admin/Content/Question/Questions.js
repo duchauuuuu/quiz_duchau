@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import "./Questions.scss";
 import { TiPlus } from "react-icons/ti";
@@ -7,14 +7,19 @@ import { AiFillPicture } from "react-icons/ai";
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
 import Lightbox from "react-awesome-lightbox";
+import { toast } from "react-toastify";
+import {
+  getAllQuizForAdmin,
+  postCreateNewQuestionForQuiz,
+  postCreateNewAnswerForQuestion,
+} from "../../../../services/apiService";
 const Questions = (props) => {
-  const options = [
-    { value: "chocolate", label: "chocolate" },
-    { value: "strawberry", label: "strawberry" },
-    { value: "vanilla", label: "vanilla" },
-  ];
-  const [selectedQuiz, setSelectedQuiz] = useState({});
-  const [questions, setQuestions] = useState([
+  const [dataImagePreview, setDataImagePreview] = useState({
+    title: "",
+    url: "",
+  });
+  const [isPreviewImage, setIsPreviewImage] = useState(false);
+  const initQuestion = [
     {
       id: uuidv4(),
       description: "",
@@ -28,7 +33,27 @@ const Questions = (props) => {
         },
       ],
     },
-  ]);
+  ]
+  const [questions, setQuestions] = useState(initQuestion);
+  const [selectedQuiz, setSelectedQuiz] = useState({});
+  const [listQuiz, setListQuiz] = useState([]);
+
+  useEffect(() => {
+    fetchQuiz();
+  }, []);
+
+  const fetchQuiz = async () => {
+    let res = await getAllQuizForAdmin();
+    if (res && res.EC === 0) {
+      let newQuiz = res.DT.map((item) => {
+        return {
+          value: item.id,
+          label: `${item.id} - ${item.description}`,
+        };
+      });
+      setListQuiz(newQuiz);
+    }
+  };
   const handleAddRemoveQuestion = (type, id) => {
     if (type === "ADD") {
       const newQuestions = {
@@ -114,23 +139,78 @@ const Questions = (props) => {
       setQuestions(questionsClone);
     }
   };
-  const [isPreviewImage, setIsPreviewImage] = useState(false);
-  const handleSubmitQuestionForQuiz = () => {};
-  const [dataImagePreview,setDataImagePreview]= useState({
-    title: '',
-    url:''
-  })
-  const handlePreviewImage =(questionId) =>{
-    let questionsClone = _.cloneDeep(questions)
+
+  const handleSubmitQuestionForQuiz = async () => {
+    //  validate answer
+    if (_.isEmpty(selectedQuiz)) {
+      toast.error("Please select a quiz");
+      return;
+    }
+    let isValidAnswer = true;
+    let indexQ = 0,
+      indexA = 0;
+
+    for (let i = 0; i < questions.length; i++) {
+      for (let j = 0; j < questions[i].answers.length; j++) {
+        if (!questions[i].answers[j].description) {
+          isValidAnswer = false;
+          break;
+        }
+      }
+      indexQ = i;
+      if (isValidAnswer === false) {
+        break;
+      }
+    }
+    if (isValidAnswer === false) {
+      toast.error(`Answer ${indexA + 1} of question ${indexQ + 1} is empty`);
+      return;
+    }
+
+    // validate question
+    let isValidQ = true;
+    let indexQ1 = 1;
+
+    for (let i = 0; i < questions.length; i++) {
+      if (!questions[i].description) {
+        isValidQ = false;
+        indexQ1 = i;
+        break;
+      }
+    }
+    if (isValidQ === false) {
+      toast.error(`Question ${indexQ1 + 1} is empty`);
+      return;
+    }
+    for (const question of questions) {
+      const q = await postCreateNewQuestionForQuiz(
+        +selectedQuiz.value,
+        question.description,
+        question.imageFile
+      );
+      for (const answer of question.answers) {
+        await postCreateNewAnswerForQuestion(
+          answer.description,
+          answer.isCorrect,
+          q.DT.id
+        );
+      }
+    }
+    toast.success("Create question for quiz successfully");
+    setQuestions(initQuestion);
+  };
+
+  const handlePreviewImage = (questionId) => {
+    let questionsClone = _.cloneDeep(questions);
     let index = questionsClone.findIndex((item) => item.id === questionId);
-    if(index!==-1){
+    if (index !== -1) {
       setDataImagePreview({
         url: URL.createObjectURL(questionsClone[index].imageFile),
-        title: questionsClone[index].imageName
-      })
-      setIsPreviewImage(true)
+        title: questionsClone[index].imageName,
+      });
+      setIsPreviewImage(true);
     }
-  }
+  };
   return (
     <div className="questions-container">
       <div className="title">Manage Questions</div>
@@ -141,7 +221,7 @@ const Questions = (props) => {
           <Select
             defaultValue={selectedQuiz}
             onChange={setSelectedQuiz}
-            options={options}
+            options={listQuiz}
           />
         </div>
         <div className="mt-3 mb-2">Add new Question</div>
@@ -181,8 +261,10 @@ const Questions = (props) => {
                     ></input>
                     <span>
                       {question.imageName ? (
-                        <span style={{cursor:"pointer"}} onClick={() => handlePreviewImage(question.id)}>
-                          
+                        <span
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handlePreviewImage(question.id)}
+                        >
                           question.imageName
                         </span>
                       ) : (
@@ -270,7 +352,6 @@ const Questions = (props) => {
                       </div>
                     );
                   })}
-                
               </div>
             );
           })}
@@ -285,12 +366,12 @@ const Questions = (props) => {
           </div>
         )}
         {isPreviewImage === true && (
-                  <Lightbox
-                    image={dataImagePreview.url}
-                    title={dataImagePreview.title}
-                    onClose={()=>setIsPreviewImage(false)}
-                  ></Lightbox>
-                )}
+          <Lightbox
+            image={dataImagePreview.url}
+            title={dataImagePreview.title}
+            onClose={() => setIsPreviewImage(false)}
+          ></Lightbox>
+        )}
       </div>
     </div>
   );
