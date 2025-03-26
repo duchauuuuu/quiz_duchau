@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
-import "./Questions.scss";
+import "./QuizQA.scss";
 import { TiPlus } from "react-icons/ti";
 import { HiMinus } from "react-icons/hi";
 import { AiFillPicture } from "react-icons/ai";
@@ -12,8 +12,9 @@ import {
   getAllQuizForAdmin,
   postCreateNewQuestionForQuiz,
   postCreateNewAnswerForQuestion,
+  getQuizWithQA,
 } from "../../../../services/apiService";
-const Questions = (props) => {
+const QuizQA = (props) => {
   const [dataImagePreview, setDataImagePreview] = useState({
     title: "",
     url: "",
@@ -33,15 +34,60 @@ const Questions = (props) => {
         },
       ],
     },
-  ]
+  ];
   const [questions, setQuestions] = useState(initQuestion);
   const [selectedQuiz, setSelectedQuiz] = useState({});
   const [listQuiz, setListQuiz] = useState([]);
-
+  
   useEffect(() => {
     fetchQuiz();
   }, []);
 
+  useEffect(() => {
+    console.log(selectedQuiz)
+    if (selectedQuiz && selectedQuiz.value) {fetchQuizWithQA()};
+  }, [selectedQuiz]); 
+  
+
+  // return a promise that resolves with a File instance
+  function urltoFile(url, filename, mimeType) {
+    if (url.startsWith("data:")) {
+      var arr = url.split(","),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[arr.length - 1]),
+        n = bstr.length,
+        u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      var file = new File([u8arr], filename, { type: mime || mimeType });
+      return Promise.resolve(file);
+    }
+    return fetch(url)
+      .then((res) => res.arrayBuffer())
+      .then((buf) => new File([buf], filename, { type: mimeType }));
+  }
+
+
+
+  const fetchQuizWithQA = async () => {
+    let rs = await getQuizWithQA(selectedQuiz.value);
+    if (rs && rs.EC == 0) {
+      // convert base64 to file object
+      let newQA = [];
+
+      for (let i = 0; i < rs.DT.qa.length; i++) {
+        let q= rs.DT.qa[i];
+        if (q.imageFile) {
+          q.imageName= `Question - ${q.id}`
+        q.imageFile =await urltoFile(`data:image/png;base64,${q.imageFile}`, `Question - ${q.id}`,'image/png')
+        }
+        newQA.push(q);
+       }
+       setQuestions(newQA);
+      
+    }
+  };
   const fetchQuiz = async () => {
     let res = await getAllQuizForAdmin();
     if (res && res.EC === 0) {
@@ -213,15 +259,14 @@ const Questions = (props) => {
   };
   return (
     <div className="questions-container">
-      <div className="title">Manage Questions</div>
-      <hr />
       <div className="add-new-question">
         <div className="col-6 form-group">
           <label className="mb-2">Select Quiz:</label>
           <Select
             defaultValue={selectedQuiz}
             onChange={setSelectedQuiz}
-            options={listQuiz} className="react-select"
+            options={listQuiz}
+            className="react-select"
           />
         </div>
         <div className="mt-3 mb-2">Add new Question</div>
@@ -376,4 +421,4 @@ const Questions = (props) => {
     </div>
   );
 };
-export default Questions;
+export default QuizQA;
