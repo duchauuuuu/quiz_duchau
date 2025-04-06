@@ -6,6 +6,7 @@ import "./DetailQuiz.scss";
 import Question from "./Question";
 import ModalResult from "./ModalResult";
 import { set } from "nprogress";
+import RightContent from "./Content/RightContent";
 const DetailQuiz = (props) => {
   const params = useParams();
   const quizId = params.id;
@@ -139,7 +140,10 @@ const DetailQuiz = (props) => {
           <button className="btn btn-warning" onClick={()=>handleFinishQuiz()}>Finish</button>
         </div>
       </div>
-      <div className="right-content"></div>
+      <div className="right-content">
+        <RightContent dataQuiz={dataQuiz} handleFinishQuiz={handleFinishQuiz} setIndex={setIndex}/>
+        
+      </div>
       <ModalResult show={isShowModalResult} setShow={setIsShowModalResult} dataModalResult={dataModalResult}/>
     </div>
   );

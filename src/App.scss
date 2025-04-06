@@ -54,15 +54,15 @@ body {
       flex-direction: column;
       gap: 30px;
     }
-    .title-1{
+    .title1{
       font-size: 35px;
       font-weight: 600;
     }
-    .title-2{
+    .title2{
       font-size: 22px;
 
     }
-    .title-3{
+    .title3{
       button{
         border-radius: 5px;
         height: 40px;
@@ -80,6 +80,11 @@ body {
   }
   .app-content{
     height: calc(100vh - 60px);
+  }
+}
+.languages{
+  .dropdown-toggle::after{
+    display: none !important;
   }
 }
 
