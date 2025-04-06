@@ -29,6 +29,7 @@ const ListQuiz = (props) => {
                 src={`data:image/jpeg;base64,${quiz.image}`}
                 className="card-img-top"
                 alt="..."
+                style={{ height: "200px", objectFit: "cover" }}
               />
               <div className="card-body">
                 <h5 className="card-title">Quiz {index + 1}</h5>

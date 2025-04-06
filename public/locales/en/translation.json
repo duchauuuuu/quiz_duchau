@@ -5,5 +5,18 @@
     "title3": {
       "login": "Get started—it's free"
     }
+  },
+  "quiz":{
+      "question":"Question",
+      "show-answer":"Show answer",
+      "close":"Close",
+      "total-question":"Total questions",
+      "total-correct":"Total correct",
+      "result":"Result"
+  },
+  "header":{
+    "home": "Home",
+    "user": "User",
+    "quiz":"Quiz"
   }
 }

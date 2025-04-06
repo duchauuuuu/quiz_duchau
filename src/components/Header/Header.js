@@ -9,8 +9,10 @@ import { logout } from '../../services/apiService';
 import { toast } from 'react-toastify';
 import { doLogout } from '../../redux/action/userAction';
 import { Language } from './Language';
+import  Profile  from './Profile';
+import { useState } from 'react';
 const Header= () => {
-  
+  const [isShowModalProfile,setIsShowModalProfile]=useState(false);
   const isAuthenticated = useSelector(state=>state.user.isAuthenticated);
   const account = useSelector(state=>state.user.account);
  
@@ -36,6 +38,7 @@ const Header= () => {
 
   }
   return (
+    <>
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
         {/* <Navbar.Brand href="#home">Quiz Đức Hậu</Navbar.Brand> */}
@@ -56,7 +59,7 @@ const Header= () => {
         
           </> :
           <NavDropdown title="Settings" id="basic-nav-dropdown">
-              <NavDropdown.Item >Profile</NavDropdown.Item>
+              <NavDropdown.Item onClick={()=>{setIsShowModalProfile(true)}} >Profile</NavDropdown.Item>
               <NavDropdown.Item onClick={()=>handleLogOut()}>Log out</NavDropdown.Item>
             </NavDropdown>
           }
@@ -65,6 +68,8 @@ const Header= () => {
         </Navbar.Collapse>
       </Container>
     </Navbar>
+    <Profile show={isShowModalProfile} setShow={setIsShowModalProfile}/>
+</>
   );
 }
 
