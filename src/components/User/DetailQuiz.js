@@ -191,7 +191,7 @@ const DetailQuiz = (props) => {
                                     : []
                             } />
                     </div>
-                    <div className="footer">
+                    <div className="footer" style={{display:'flex',gap:'10px'}}>
                         <button className="btn btn-secondary"
                             onClick={() => handlePrev()}
                         >Prev</button>
