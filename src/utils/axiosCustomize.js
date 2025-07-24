@@ -6,7 +6,8 @@ NProgress.configure({
   trickleSpeed:100
 })
 const instance = axios.create({
-    baseURL: 'http://localhost:8081/',
+    // baseURL: 'http://localhost:8081/',
+    baseURL: 'https://hoidanit-next-helloworld.onrender.com/',
     
   });
   // Add a request interceptor
